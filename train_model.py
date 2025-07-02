@@ -2,66 +2,90 @@ import pandas as pd
 import numpy as np
 import nltk
 from utils import process_text, build_freqs
+
 nltk.download('stopwords')
-nltk.download('punkt')
-complaints = pd.read_csv("Bank_Complaint_Dataset.csv")
+nltk.download('punkt') #A tokenizer used to split sentences into words.
 
-all_urgents = complaints[complaints['Urgent'] == 1]
-all_nurgents = complaints[complaints['Urgent'] == 0]
 
-train_complaints = complaints[:60]
-urgent_train_complaints = train_complaints[train_complaints['Urgent'] == 1]
-nurgent_train_complaints = train_complaints[train_complaints['Urgent'] == 0]    
+comp_file = pd.read_csv("filtered_complaints.csv")
+texts = comp_file["text"].values
+labels = comp_file["label"].values.reshape(-1, 1)
 
-test_complaints = complaints[60:]
-urgent_test_complaints = test_complaints[test_complaints['Urgent'] == 1]
-nurgent_test_complaints = test_complaints[test_complaints['Urgent'] == 0]
+split_index = int(0.8 * len(texts))
+training_texts = texts[:split_index]
+testing_texts = texts[split_index:]
 
-#Extract text and labels from train/test sets:
-# Features (text)
-train_texts = np.array(train_complaints["Complaint Text"])
-test_texts = np.array(test_complaints["Complaint Text"])
+training_labels = labels[:split_index]
+testing_labels = labels[split_index:]
 
-# Labels (0 or 1 from 'Urgent' column)
-train_labels = np.array(train_complaints["Urgent"])
-test_labels = np.array(test_complaints["Urgent"])
+freqs = build_freqs(training_texts, training_labels)
 
-freqs = build_freqs(train_texts, train_labels)
-print(freqs)
-print("train_texts:", train_texts)
+def extract_features(text, freqs): #text string to feature vector [bias, positive_word_count, negative_word_count]
+    word_list = process_text(text)
+    features = np.zeros(3)
+    features[0] = 1
 
-def sigmoid(z): 
-    h = 1 / (1 + np.exp(-z))
-    return h
+    for word in word_list:
+        if (word, 1.0) in freqs:
+            features[1] += freqs[(word, 1.0)]
+        if (word, 0.0) in freqs:
+            features[2] += freqs[(word, 0.0)]
+    return features.reshape(1, -1)
 
-def compute_cost(x, y, theta):
+train_features = []
+
+for text in training_texts:
+    features = extract_features(text, freqs)
+    train_features.append(features) 
+
+X_train = np.vstack(train_features) #list of 1x3 np arrays to (n, 3) matrix. n=complsints
+
+test_features = [] #for testing
+
+for text in testing_texts:
+    features = extract_features(text, freqs)
+    test_features.append(features)
+
+X_test = np.vstack(test_features)
+
+
+def sigmoid(z): #to model probabilities. any input -> (0, 1)
+    return 1 / (1 + np.exp(-z))
+
+def compute_cost(x, y, theta): #returns a single float value representing how wrong the model is right now.
     m = x.shape[0]
-    z = np.dot(x, theta)
-    h = sigmoid(z)
-    J = -1/m * (np.dot(y.T, np.log(h + 1e-15)) + np.dot((1 - y).T, np.log(1 - h + 1e-15)))
-    return float(J)
+    h = sigmoid(np.dot(x, theta))
+    return float(-1/m * (np.dot(y.T, np.log(h + 1e-15)) + np.dot((1 - y).T, np.log(1 - h + 1e-15))))
 
-def gradient_descent(x, y, theta, alpha, num_iters):
-    """
-    x: feature matrix (m x n)
-    y: label vector (m x 1)
-    theta: weight vector (n x 1)
-    alpha: learning rate
-    num_iters: number of iterations
-    Returns: final cost, final theta
-    """
+def gradient_descent(x, y, theta, alpha, num_iters): #trains the model by updating weights theta
     m = x.shape[0]
-
     for i in range(num_iters):
         z = np.dot(x, theta)
         h = sigmoid(z)
-        gradient = (1/m) * np.dot(x.T, (h - y))
+        gradient = np.dot(x.T, h - y) / m
         theta -= alpha * gradient
-        
         if i % 100 == 0 or i == num_iters - 1:
-            cost = compute_cost(x, y, theta)
-            print(f"Iteration {i}: Cost = {cost:.5f}")
-    
-    final_cost = compute_cost(x, y, theta)
-    return final_cost, theta
+            print(f"Iteration {i}: Cost = {compute_cost(x, y, theta):.5f}")
+    return compute_cost(x, y, theta), theta
 
+# Train
+theta = np.zeros((3, 1))
+final_cost, theta = gradient_descent(X_train, training_labels, theta, alpha=1e-7, num_iters=1500)
+
+# === Evaluation ===
+def predict(text, freqs, theta):
+    x = extract_features(text, freqs)
+    return sigmoid(np.dot(x, theta))[0, 0]
+
+def test_logistic_regression(test_x, test_y, freqs, theta):
+    correct = 0
+    for text, label in zip(test_x, test_y):
+        prob = predict(text, freqs, theta)
+        pred = 1 if prob > 0.5 else 0
+        if pred == label:
+            correct += 1
+    return correct / len(test_y)
+
+acc = test_logistic_regression(testing_texts, testing_labels, freqs, theta)
+print(f"\nTest Accuracy: {acc * 100:.2f}%")
+print(freqs)

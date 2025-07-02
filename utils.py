@@ -10,22 +10,23 @@ def process_text(text):
 
     text = re.sub(r'https?://[^\s\n\r]+', '', text)
     text = text.translate(str.maketrans('', '', string.punctuation))
+
     tokens = word_tokenize(text.lower())
 
-    # Remove stopwords and stem
-    cleaned_tokens = [
-        stemmer.stem(word)
-        for word in tokens
-        if word not in stopwords_english and word.isalpha()
-    ]
+    cleaned_tokens = []
+    for word in tokens:
+        if word.isalpha() and word not in stopwords_english:
+            stemmed_word = stemmer.stem(word)
+            cleaned_tokens.append(stemmed_word)
 
     return cleaned_tokens
 
 def build_freqs(texts, labels):
     freqs = {}
     for label, text in zip(labels, texts):
-        for word in process_text(text):
-            pair = (word, label)
+        words = process_text(text)
+        for word in words:
+            pair = (word, float(label))
             if pair in freqs:
                 freqs[pair] += 1
             else:
