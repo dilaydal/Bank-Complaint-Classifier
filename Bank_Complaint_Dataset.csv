@@ -1,4 +1,34 @@
 Complaint Text,Urgent
+"My account was hacked and money was withdrawn without my consent.",1
+"There was an unauthorized payment from my debit card yesterday.",1
+"I can't log into my online banking app even after resetting my password.",1
+"My EMI was charged twice this month without any notice.",1
+"The transaction failed, but the money was deducted from my account.",1
+"There’s a suspicious charge on my credit card that I didn’t make.",1
+"The ATM took my card and didn't return it.",1
+"I need urgent help resetting my UPI PIN.",1
+"The mobile banking app keeps crashing every time I try to transfer money.",1
+"My loan is still pending approval after two weeks.",1
+"How do I change my registered phone number?",0
+"Please help me update my email address.",0
+"I want to know the interest rate for fixed deposits.",0
+"What documents do I need to open a savings account?",0
+"Can you send me my last 3 bank statements via email?",0
+"I want to increase my credit card limit.",0
+"Please guide me through the process to apply for a loan.",0
+"How can I close my savings account?",0
+"I need help activating my new debit card.",0
+"Can I get a certificate for my completed loan?",0
+"There was a failed transaction, but the amount was still deducted.",1
+My online banking is locked and I can't access my funds.,1
+The credit card transaction shows double deduction.,1
+My account was suddenly frozen without any explanation.,1
+I reported fraud but haven’t received any response.,1
+How do I check the status of my credit card application?,0
+Please provide the steps to reset my login credentials.,0
+I would like to request a new checkbook.,0
+What are the charges for international transactions?,0
+"I need to dispute a transaction made in a foreign country, my account may have been stolen.",1
 My credit card was stolen and used for purchases I did not make.,1
 How do I update my address?,0
 I was charged twice for the same transaction!,1
@@ -42,7 +72,6 @@ I can’t access my net banking account even after reset.,1
 There’s a delay in receiving the OTP for transactions.,1
 My account balance suddenly dropped without transaction.,1
 I received someone else's account statement.,0
-I need to dispute a transaction made in a foreign country.,1
 Is there a charge for ATM withdrawal beyond 5 times?,0
 Please correct my name spelling on the account.,0
 When will I get the refund for my failed payment?,1
@@ -59,3 +88,4 @@ My card was blocked even though I reported no fraud.,1
 There’s a pending hold on my funds that shouldn’t be there.,1
 The mobile app displays the wrong account balance.,1
 How do I reactivate my dormant account?,0
+I believe my personal information is stolen.,1
