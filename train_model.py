@@ -45,7 +45,7 @@ def extract_features(text, freqs): #text string to feature vector [bias, positiv
             features[1] += freqs[(word, 1.0)]
         if (word, 0.0) in freqs:
             features[2] += freqs[(word, 0.0)]
-    features[1] = np.log1p(features[1])
+    features[1] = np.log1p(features[1]) #np.log1p stabilized input range, otherwise sigmoid can output 1 for every value
     features[2] = np.log1p(features[2])
     return features.reshape(1, -1) #(n_features,) to (1, n_features) shape
 
