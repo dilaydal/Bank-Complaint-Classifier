@@ -1,6 +1,6 @@
 # Bank Complaint Dispute Classifier
 
-This project implements a **logistic regression classifier** to predict whether a bank complaint was **disputed** by the consumer or not. It uses a manually engineered frequency-based feature set — no TF-IDF or deep learning models are involved.
+This project implements a **logistic regression classifier** to predict whether a bank complaint was **disputed** by the consumer or not.
 
 ---
 
