@@ -1,101 +1,102 @@
 # Bank Complaint Dispute Classifier
 
-This project implements a **logistic regression classifier** to predict whether a bank complaint was **disputed** by the consumer or not.
+This project implements **Logistic Regression** and **Naive Bayes** classifiers to predict whether a bank complaint was **disputed** by the consumer or not.
 
 ---
 
 ## Dataset
 
-Data comes from the [Consumer Financial Protection Bureau (CFPB)](https://www.kaggle.com/code/shtrausslearning/banking-consumer-complaint-analysis). Each entry includes:
+Data is sourced from the [Consumer Financial Protection Bureau (CFPB)](https://www.kaggle.com/code/shtrausslearning/banking-consumer-complaint-analysis). Each entry includes:
 
 - `text`: The complaint narrative  
 - `label`:  
   - `1` → Disputed complaint  
   - `0` → Not disputed
 
-Processed data files:
+Processed files:
 - `filtered_complaints.csv` — Cleaned and labeled complaints  
-- `filtered_complaints_with_word_counts.csv` — Same, but with an extra column for processed word count
+- `filtered_complaints_with_word_count.csv` — Same, with added word count  
+- `logistic_results.txt`, `naive_bayes_test_results.txt` — Prediction logs for test set  
+- `logistic_errors.txt`, `naive_bayes_errors.txt` — Misclassified examples
 
 ---
 
-## Approach
+## Models
 
-- **Preprocessing**:  
-  Lowercasing, tokenization, stemming, and stopword removal using NLTK.
+### 1. Logistic Regression  
+- Feature vector:  
+  `[bias_term, disputed_word_count, non_disputed_word_count]`  
+- Trained using gradient descent  
+- Sigmoid activation and cost minimization  
+- Predicts via thresholding (prob > 0.5 → disputed)
 
-- **Features**:  
-  Each complaint is represented as a vector:  
-  `[bias_term, disputed_word_count, non_disputed_word_count]`
-
-- **Model**:  
-  Logistic regression, trained via gradient descent.
+### 2. Naive Bayes  
+- Trained on word frequencies in disputed vs. non-disputed complaints  
+- Predicts based on log-likelihood of word occurrence in each class  
+- Fast and interpretable baseline model
 
 ---
 
-## File Structure
+## Project Structure
 
-```
 BankComplaints/
+├── data/
+│   ├── filtered_complaints.csv
+│   ├── filtered_complaints_with_word_count.csv
+│   ├── logistic_results.txt
+│   ├── naive_bayes_results.txt
+│   ├── logistic_errors.txt
+│   └── naive_bayes_errors.txt
 │
-├── filtered_complaints.csv                     # Preprocessed labeled data
-├── filtered_complaints_with_word_counts.csv    # Same, with word counts
-├── train_model.py                              # Trains the model
-├── utils.py                                    # Text cleaning & frequency logic
-├── requirements.txt                            # Python package dependencies
-├── README.md                                   # This file
-└── wordcloud.png                               # Word cloud of all complaint words
-```
+├── scripts/
+│   ├── train_logistic.py
+│   ├── train_naive_bayes.py
+│   └── utils.py
+│
+├── visuals/
+│   └── wordcloud.png
+│
+├── requirements.txt
+└── README.md
 
----
+## Usage
 
-## How to Run
+### Environment Setup
 
-### 1. Install Dependencies
+Install dependencies:
 
-```bash
 pip install -r requirements.txt
-```
 
-Or manually:
+### Training
 
-```bash
-pip install numpy pandas nltk matplotlib wordcloud
-```
+Train Logistic Regression:
 
-### 2. Train the Model
+python scripts/train_logistic.py
 
-```bash
-python train_model.py
-```
+Train Naive Bayes:
 
-This will:
-- Train a logistic regression model
-- Print cost updates every 100 iterations
-- Report test accuracy
-- Save a word cloud image to `wordcloud.png`
+python scripts/train_naive_bayes.py
 
+### Output
 
-This will prompt you for a complaint text and return the prediction:  
-**Disputed (1)** or **Not disputed (0)**.
+Training results and classification errors are saved in:
 
----
+- Logistic Regression: data/logistic_results.txt and data/logistic_errors.txt
 
-## Word Cloud
+- Naive Bayes: data/naive_bayes_results.txt and data/naive_bayes_errors.txt
 
-A word cloud of all complaint words is generated during training and saved to:
+### Visualization
 
-```
-wordcloud.png
-```
+Word cloud visualization of frequent terms:
 
----
+See visuals/wordcloud.png
 
-## Feature Summary
+### Dependencies
 
-Each complaint is converted to a vector:
-```
-[1, count_of_disputed_words, count_of_non_disputed_words]
-```
+Key Python libraries used:
 
-This simple representation feeds into a logistic regression model that performs well with clean, labeled data.
+NLTK
+NumPy
+pandas
+matplotlib
+wordcloud

@@ -137,7 +137,7 @@ print("Len complaints ", len(comp_file))
 print("Len training labels: ", len(training_labels))
 print("Len testing labels: ", len(testing_labels))
 save_naive_bayes_test_results(
-    file_path="data/naive_bayes_test_results.txt",
+    file_path="data/naive_bayes_results.txt",
     freqs=freqs,
     train_texts=training_texts,
     train_labels=training_labels,
