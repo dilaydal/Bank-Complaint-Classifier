@@ -38,7 +38,7 @@ Processed files:
 ---
 
 ## Project Structure
-
+'''
 BankComplaints/
 ├── data/
 │   ├── filtered_complaints.csv
@@ -58,7 +58,7 @@ BankComplaints/
 │
 ├── requirements.txt
 └── README.md
-
+'''
 ## Usage
 
 ### Environment Setup
