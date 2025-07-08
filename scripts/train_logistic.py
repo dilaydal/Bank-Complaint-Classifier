@@ -10,9 +10,9 @@ nltk.download('stopwords')
 nltk.download('punkt') #A tokenizer used to split sentences into words.
 
 
-comp_file = pd.read_csv("filtered_complaints.csv")
+comp_file = pd.read_csv("data/filtered_complaints.csv")
 comp_file["word_count"] = comp_file["text"].apply(lambda x: len(process_text(x)))
-comp_file.to_csv("filtered_complaints_with_word_count.csv", index=False)
+comp_file.to_csv("data/filtered_complaints_with_word_count.csv", index=False)
 
 texts = comp_file["text"].values
 labels = comp_file["label"].values.reshape(-1, 1)
@@ -141,7 +141,35 @@ def generate_wordcloud(freqs, label=None, title="Word Cloud", output_path="wordc
     print(f"Word cloud saved as: {output_path}")
     plt.close()
 
+def save_logistic_results(file_path, test_texts, test_labels, freqs, theta):
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write("Truth\tPredicted\tTweet\n")
+        for x, y in zip(test_texts, test_labels):
+            prob = predict(x, freqs, theta)
+            predicted = int(prob > 0.5)
+            processed = ' '.join(process_text(x))
+            line = f"{int(y)}\t{predicted}\t{processed}\n"
+            f.write(line)
+    print(f"Logistic Regression all predictions saved to: {file_path}")
+
+def save_logistic_errors(file_path, test_texts, test_labels, freqs, theta):
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write("Truth\tPredicted\tTweet\n")
+        for x, y in zip(test_texts, test_labels):
+            prob = predict(x, freqs, theta)
+            predicted = int(prob > 0.5)
+            if predicted != y:
+                processed = ' '.join(process_text(x))
+                line = f"{int(y)}\t{predicted}\t{processed}\n"
+                f.write(line)
+    print(f"Logistic Regression misclassified tweets saved to: {file_path}")
+
+
 acc = test_logistic_regression(testing_texts, testing_labels, freqs, theta)
 print(f"\nTest Accuracy: {acc * 100:.2f}%")
-generate_wordcloud(freqs, title="All Complaints")
+generate_wordcloud(freqs, title="All Complaints", output_path="visuals/wordcloud.png")
+
+save_logistic_results("data/logistic_results.txt", testing_texts, testing_labels, freqs, theta)
+save_logistic_errors("data/logistic_errors.txt", testing_texts, testing_labels, freqs, theta)
+
 interactive_predict_loop()

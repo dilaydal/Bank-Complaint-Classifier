@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+
+data/*_results.txt
+data/*_errors.txt
+visuals/*.png
+
+.ipynb_checkpoints/
+
+.vscode/
+
+.env
+*.env
